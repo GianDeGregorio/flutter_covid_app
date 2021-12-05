@@ -11,6 +11,12 @@ class RegioniPage extends StatefulWidget {
 
 class _RegioniPageState extends State<RegioniPage> {
   final HttpService httpService = HttpService();
+  late Future<List<Regioni>> _future;
+  @override
+  void initState(){
+    _future = httpService.getProvince();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +25,18 @@ class _RegioniPageState extends State<RegioniPage> {
         title: Text("Regioni"),
       ),
       body: FutureBuilder(
-        future: httpService.getProvince(),
+        future: _future,
         builder: (BuildContext context, AsyncSnapshot<List<Regioni>> snapshot ){
           if (snapshot.hasData) {
             List<Regioni> regioni = snapshot.requireData;
             return ListView(
-              children: regioni.map((Regioni regione) => ListTile(title: Text(regione.regioneName),),).toList(),
+              children: regioni.map((Regioni regione) =>
+                  ExpansionTile(
+                    title: Text(regione.regioneName),
+                    children: const [
+                      ListTile() //finire di aggiungere qui
+                    ],
+                  ),).toList(),
             );
           } else {
             return Center(child: CircularProgressIndicator());
